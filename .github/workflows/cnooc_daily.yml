@@ -1,0 +1,34 @@
+name: CNOOC-Daily-Check
+
+on:
+  # 每天北京时间 17:00 触发一次（UTC 9:00）
+  schedule:
+    - cron: '0 9 * * *'
+  # 允许手动触发（在 Actions 页面点 Run workflow）
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 拉代码
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. 装 Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 3. 装依赖（requests 就够了）
+      - name: Install deps
+        run: pip install requests
+
+      # 4. 运行脚本
+      - name: Run check
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          KEYWORD: ${{ secrets.KEYWORD }}
+        run: python check.py
