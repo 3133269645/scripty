@@ -3,7 +3,7 @@ name: CNOOC-Daily-Check
 on:
   # 每天北京时间 17:00 触发一次（UTC 9:00）
   schedule:
-    - cron: '0 9 * * *'
+     - cron: '0 */2 * * *'
   # 允许手动触发（在 Actions 页面点 Run workflow）
   workflow_dispatch:
 
