@@ -15,7 +15,7 @@ PARAMS = {
     "size": 1,
 }
 
-KEYWORD = os.getenv("KEYWORD", "常州院")
+KEYWORD = os.getenv("KEYWORD", "11")
 PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN","1f714c352f8d4603b7332e00713c8d9d")  # 在 GitHub Secrets 配置
 
 def main():
