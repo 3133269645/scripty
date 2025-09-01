@@ -3,7 +3,7 @@ name: CNOOC-Daily-Check
 on:
   # 每两个小时触发一次检测
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */12 * * *'
   # 允许手动触发（在 Actions 页面点 Run workflow）
   workflow_dispatch:
 
