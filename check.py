@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # check.py
 import os
+import time
 from datetime import datetime, timedelta
 import requests
 
@@ -44,6 +45,7 @@ def main():
     for i in range(4):
         print(f"开始第{i}页")
         for childrenActive, page in enumerate(PAG[i]):
+
             req = requests.get(API[i].format(page), params=PARAMS, headers=HEADERS, timeout=10).json()["result"]["data"]
             if len(req)>=3:
                 max_num = 3
@@ -70,6 +72,7 @@ def main():
                         all_url.append(url)
                         all_title.append(title)
                         break
+            time.sleep(1)
     content = ""
     for u, t in zip(all_url, all_title):
         content += f"标题:{t},\n网址:{u}\n"
