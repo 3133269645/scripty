@@ -71,7 +71,7 @@ def main():
                         all_url.append(url)
                         all_title.append(title)
                         break
-            time.sleep(1)
+            time.sleep(2)
     content = ""
     for u, t in zip(all_url, all_title):
         content += f"标题:{t},\n网址:{u}\n"
