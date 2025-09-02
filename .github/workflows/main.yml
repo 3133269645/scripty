@@ -10,7 +10,7 @@ jobs:
   scrape:
     # 使用 GitHub 官方 Large Runner（固定公网 IP，需开通）
     # 把下面这一行换成你实际申请的 runner 标签即可
-    runs-on: ubuntu-latest-4-cores
+    runs-on: ubuntu-latest
 
     steps:
       # 1. 检出代码
