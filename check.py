@@ -4,6 +4,7 @@ import os
 import time
 from datetime import datetime
 from playwright.sync_api import sync_playwright
+import json
 
 # ====== 原配置，一行不改 ======
 API = {
@@ -42,17 +43,21 @@ PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
 
 
 def fetch_json(url: str):
-    """Playwright 直接拿整页 JSON 字符串"""
-    import json
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        # 直接访问接口，页面内容就是纯 JSON
-        response = page.goto(url, timeout=30000)
-        text = response.text()          # 拿到原始 JSON 字符串
-        browser.close()
-        return json.loads(text)["result"]["data"]
 
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=True,
+            # 关键：让浏览器所有流量都走 WARP
+            proxy={"server": "http://127.0.0.1:40000"}  # WARP 默认监听 40000
+        )
+        page = browser.new_page()
+        try:
+            resp = page.goto(url, timeout=60000)      # 加大超时
+            text = resp.text()
+            data = json.loads(text)["result"]["data"]
+        finally:
+            browser.close()
+        return data
 
 def main():
     all_url, all_title = [], []
