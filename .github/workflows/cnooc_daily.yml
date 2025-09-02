@@ -1,10 +1,3 @@
-name: CNOOC-Daily-Check
-
-on:
-  schedule:
-    - cron: '0 */12 * * *'
-  workflow_dispatch:
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -15,17 +8,22 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 1. 给 Runner 装 WARP（出口 IP 立刻换到 Cloudflare）
-      - name: Use Cloudflare WARP
-        uses: ciiiii/cloudflare-warp-action@v1   # 官方 Action，10 秒完成
+      # 1️⃣ 一键安装并启动 Cloudflare WARP（SOCKS5 代理）
+      - name: Install & start Cloudflare WARP
+        run: |
+          curl -fsSL https://github.com/fscarmen/warp-sh/raw/main/warp.sh | bash -s -- --install --socks5 40000
+          # 等待 5 秒让 WARP 完成握手
+          sleep 5
+          # 验证代理端口已监听
+          ss -lntp | grep 40000 || netstat -lntp | grep 40000 || true
 
-      # 2. 装 Python 依赖 & 浏览器
+      # 2️⃣ 装 Python 依赖
       - name: Install deps
         run: |
           pip install playwright
           playwright install chromium
 
-      # 3. 运行脚本（此时流量自动走 127.0.0.1:40000）
+      # 3️⃣ 运行脚本（流量自动走 127.0.0.1:40000）
       - name: Run check
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
