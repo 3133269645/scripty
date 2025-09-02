@@ -8,31 +8,21 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # 官方维护的镜像已内置 WARP，启动即连
+    container: cloudflare/cloudflare-warp:latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 1️⃣ 一键安装并启动 Cloudflare WARP（SOCKS5 代理）
-      - name: Install & start Cloudflare WARP
-        run: |
-          curl -fL https://pkg.cloudflareclient.com/cloudflare-warp.deb -o warp.deb
-          sudo dpkg -i warp.deb
-          sudo warp-cli --accept-tos register
-          sudo warp-cli --accept-tos connect
-          sudo warp-cli --accept-tos set-mode proxy
-          sudo warp-cli --accept-tos set-proxy-port 40000
-          warp-cli status
+      - run: pip install playwright
+      - run: playwright install chromium
 
-      # 2️⃣ 装 Python 依赖
-      - name: Install deps
-        run: |
-          pip install playwright
-          playwright install chromium
+      # 验证已连上 Cloudflare
+      - run: warp-cli status
 
-      # 3️⃣ 运行脚本（流量自动走 127.0.0.1:40000）
+      # 运行脚本（流量已走 WARP）
       - name: Run check
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
