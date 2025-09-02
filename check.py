@@ -2,9 +2,9 @@
 # check.py
 import os
 import time
-from datetime import datetime
-from playwright.sync_api import sync_playwright
 import json
+import requests
+from datetime import datetime
 
 # ====== 原配置，一行不改 ======
 API = {
@@ -27,7 +27,7 @@ HEADERS = {
     "did": "0",
     "host": "bid.cnooc.com.cn",
     "is-english": "0",
-    "referer": "https://bid.cnooc.com.cn/home/ ",
+    "referer": "https://bid.cnooc.com.cn/home/  ",
     "sec-ch-ua": '"Not;A=Brand";v="99", "Microsoft Edge";v="139", "Chromium";v="139"',
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"Windows"',
@@ -41,28 +41,20 @@ PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
 # ======================================
 
 
-
 def fetch_json(url: str):
-    with sync_playwright() as p:
-        # 关键：走本地 SOCKS5 代理
-        browser = p.chromium.launch(
-            headless=True,
-            proxy={"server": "socks5://127.0.0.1:40000"}
-        )
-        page = browser.new_page()
-        resp = page.goto(url, timeout=60000)
-        data = resp.json()["result"]["data"]
-        browser.close()
-        return data
+    """requests 直接获取 JSON"""
+    response = requests.get(url, headers=HEADERS, timeout=30)
+    response.raise_for_status()
+    return response.json()["result"]["data"]
+
 
 def main():
     all_url, all_title = [], []
     for i in range(4):
         print(f"开始第{i}页")
         for childrenActive, page in enumerate(PAG[i]):
-
-            req = fetch_json(API[i].format(page,page))
-            print(API[i].format(page,page))
+            req = fetch_json(API[i].format(page, page))
+            print(API[i].format(page, page))
             if len(req) >= 3:
                 max_num = 3
             elif 0 < len(req) < 3:
@@ -72,7 +64,7 @@ def main():
             for j in range(max_num):
                 item = req[j]
                 title = item["title"]
-                url = f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?index=1&childrenActive= {childrenActive}&id={item['id']}&type=null"
+                url = f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?index=1&childrenActive=  {childrenActive}&id={item['id']}&type=null"
 
                 created_str = item["createdTime"]
                 now_str = str(datetime.now())
@@ -90,9 +82,8 @@ def main():
         content += f"标题:{t},\n网址:{u}\n"
 
     if PUSH_TOKEN and content:
-        import requests
         requests.get(
-            "https://www.pushplus.plus/send",
+            "https://www.pushplus.plus/send ",
             params={"token": PUSH_TOKEN, "title": "中国海油供应链平台新公告",
                     "content": f"最新通告内容：\n{content}"},
             timeout=5,
