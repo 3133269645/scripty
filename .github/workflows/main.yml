@@ -1,0 +1,53 @@
+name: CNOOC 公告检查（每 12 小时）
+
+on:
+  schedule:
+    # 每天 00:00 和 12:00 各跑一次
+    - cron: '0 */12 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  scrape:
+    # 使用 GitHub 官方 Large Runner（固定公网 IP，需开通）
+    # 把下面这一行换成你实际申请的 runner 标签即可
+    runs-on: ubuntu-latest-4-cores
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. 系统依赖
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y curl unzip
+
+      # 3. 安装 Python & Playwright
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install chromium
+
+      # 4. 运行脚本
+      - name: Run script
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          KEYWORD: ${{ secrets.KEYWORD }}
+        run: |
+          mkdir -p output
+          python3 check.py
+
+      # 5. 上传结果
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cnooc_result
+          path: output/
+          retention-days: 7
