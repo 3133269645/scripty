@@ -43,20 +43,16 @@ PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
 
 
 def fetch_json(url: str):
-
     with sync_playwright() as p:
+        # 关键：走本地 SOCKS5 代理
         browser = p.chromium.launch(
             headless=True,
-            # 关键：让浏览器所有流量都走 WARP
-            proxy={"server": "http://127.0.0.1:40000"}  # WARP 默认监听 40000
+            proxy={"server": "socks5://127.0.0.1:40000"}
         )
         page = browser.new_page()
-        try:
-            resp = page.goto(url, timeout=60000)      # 加大超时
-            text = resp.text()
-            data = json.loads(text)["result"]["data"]
-        finally:
-            browser.close()
+        resp = page.goto(url, timeout=60000)
+        data = resp.json()["result"]["data"]
+        browser.close()
         return data
 
 def main():
