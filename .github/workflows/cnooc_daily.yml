@@ -1,32 +1,25 @@
 name: CNOOC-Daily-Check
 
 on:
-  # 每两个小时触发一次检测
   schedule:
     - cron: '0 */12 * * *'
-  # 允许手动触发（在 Actions 页面点 Run workflow）
   workflow_dispatch:
 
 jobs:
   check:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. 拉代码
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2. 装 Python
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 3. 装依赖（requests 就够了）
       - name: Install deps
-        run: pip install requests
+        run: |
+          pip install playwright
+          playwright install chromium
 
-      # 4. 运行脚本
       - name: Run check
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
