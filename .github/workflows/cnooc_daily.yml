@@ -18,11 +18,13 @@ jobs:
       # 1️⃣ 一键安装并启动 Cloudflare WARP（SOCKS5 代理）
       - name: Install & start Cloudflare WARP
         run: |
-          curl -fsSL https://github.com/fscarmen/warp-sh/raw/main/warp.sh | bash -s -- --install --socks5 40000
-          # 等待 5 秒让 WARP 完成握手
-          sleep 5
-          # 验证代理端口已监听
-          ss -lntp | grep 40000 || netstat -lntp | grep 40000 || true
+          curl -fL https://pkg.cloudflareclient.com/cloudflare-warp.deb -o warp.deb
+          sudo dpkg -i warp.deb
+          sudo warp-cli --accept-tos register
+          sudo warp-cli --accept-tos connect
+          sudo warp-cli --accept-tos set-mode proxy
+          sudo warp-cli --accept-tos set-proxy-port 40000
+          warp-cli status
 
       # 2️⃣ 装 Python 依赖
       - name: Install deps
