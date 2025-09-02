@@ -15,11 +15,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      # 1. 给 Runner 装 WARP（出口 IP 立刻换到 Cloudflare）
+      - name: Use Cloudflare WARP
+        uses: ciiiii/cloudflare-warp-action@v1   # 官方 Action，10 秒完成
+
+      # 2. 装 Python 依赖 & 浏览器
       - name: Install deps
         run: |
           pip install playwright
           playwright install chromium
 
+      # 3. 运行脚本（此时流量自动走 127.0.0.1:40000）
       - name: Run check
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
