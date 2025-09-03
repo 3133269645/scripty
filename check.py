@@ -72,7 +72,7 @@ def main():
             for j in range(max_num):
                 item = req[j]
                 title = item["title"]
-                url = f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?index=1&childrenActive=  {childrenActive}&id={item['id']}&type=null"
+                url = f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?index=1&childrenActive={childrenActive}&id={item['id']}&type=null"
 
                 created_str = item["createdTime"]
                 now_str = str(datetime.now())
