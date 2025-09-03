@@ -41,7 +41,7 @@ PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
 # ======================================
 
 
-def fetch_json(url: str, max_retries: int = 3, base_delay: float = 1.0):
+def fetch_json(url: str, max_retries: int = 5, base_delay: float = 1.0):
     """requests + 指数退避重试"""
     import time
     for attempt in range(max_retries):
@@ -85,7 +85,6 @@ def main():
                         all_url.append(url)
                         all_title.append(title)
                         break
-        time.sleep(3)
     content = ""
     for u, t in zip(all_url, all_title):
         content += f"标题:{t},\n网址:{u}\n"
