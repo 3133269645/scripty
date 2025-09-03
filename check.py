@@ -36,7 +36,7 @@ HEADERS = {
     "sec-fetch-site": "same-origin",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0"
 }
-KEYWORD = ["中海油", "北斗", "人员定位", "工牌", "手持", "车载终端", "接收机", "监测", "短报文", "对讲机", "授时", "无人机", "机器人", "巡检"]
+KEYWORD = ["人员定位", "工牌", "手持", "车载终端", "接收机", "监测", "短报文", "对讲机", "授时", "无人机", "机器人", "巡检"]
 PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "f79e9d696bc745378ecb4ec8236abe83")
 # ======================================
 
@@ -78,14 +78,15 @@ def main():
                 now_date = datetime.strptime(now_str[:10], "%Y-%m-%d").date()
                 delta_days = (now_date - created_date).days
 
-                for key in KEYWORD:
-                    if key in title and delta_days == 0:
-                        all_url.append(url)
-                        all_title.append(title)
-                        break
+                if "北斗" in title:
+                    for key in KEYWORD:
+                        if key in title and delta_days == 0:
+                            all_url.append(url)
+                            all_title.append(title)
+                            break
     content = ""
     for u, t in zip(all_url, all_title):
-        content += f"标题:{t},\n网址:{u}\n"
+        content += f"\n标题:{t},\n网址:{u}\n"
     print(content)
     if PUSH_TOKEN and content:
         requests.get(
