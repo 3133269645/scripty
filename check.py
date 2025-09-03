@@ -62,7 +62,6 @@ def main():
         print(f"开始第{i}页")
         for childrenActive, page in enumerate(PAG[i]):
             req = fetch_json(API[i].format(page, page))
-            print(API[i].format(page, page))
             if len(req) >= 3:
                 max_num = 3
             elif 0 < len(req) < 3:
@@ -73,7 +72,6 @@ def main():
                 item = req[j]
                 title = item["title"]
                 url = f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?index=1&childrenActive={childrenActive}&id={item['id']}&type=null"
-
                 created_str = item["createdTime"]
                 now_str = str(datetime.now())
                 created_date = datetime.strptime(created_str[:10], "%Y-%m-%d").date()
@@ -81,14 +79,14 @@ def main():
                 delta_days = (now_date - created_date).days
 
                 for key in KEYWORD:
-                    if key in title and delta_days <= 2:
+                    if key in title and delta_days == 0:
                         all_url.append(url)
                         all_title.append(title)
                         break
     content = ""
     for u, t in zip(all_url, all_title):
         content += f"标题:{t},\n网址:{u}\n"
-
+    print(content)
     if PUSH_TOKEN and content:
         requests.get(
             "https://www.pushplus.plus/send",
