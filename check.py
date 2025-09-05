@@ -4,6 +4,7 @@ import os
 import time
 import json
 import requests
+from bs4 import BeautifulSoup
 from datetime import datetime
 
 # ====== 原配置，一行不改 ======
@@ -37,7 +38,8 @@ HEADERS = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0"
 }
 KEYWORD = ["人员定位", "工牌", "手持", "车载终端", "接收机", "监测", "短报文", "对讲机", "授时", "无人机", "机器人", "巡检"]
-PUSH_TOKEN = os.getenv("PUSHPLUS_TOKEN", "f79e9d696bc745378ecb4ec8236abe83")
+PUSH_TOKEN_1 = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
+PUSH_TOKEN_2 = os.getenv("PUSHPLUS_TOKEN", "f79e9d696bc745378ecb4ec8236abe83")
 # ======================================
 
 
@@ -77,24 +79,48 @@ def main():
                 created_date = datetime.strptime(created_str[:10], "%Y-%m-%d").date()
                 now_date = datetime.strptime(now_str[:10], "%Y-%m-%d").date()
                 delta_days = (now_date - created_date).days
+                new_url= "https://bid.cnooc.com.cn/prodeta/homeportalweb/portal/indexHome/background/businessannouncement/detail/{}"
+                new_url = new_url.format(item['id'])
 
                 if "北斗" in title:
+
+                    response = requests.get(new_url, headers=HEADERS, timeout=30)
+                    response.encoding = response.apparent_encoding
+                    js = response.json()
+                    # 取出 html 字符串
+                    html_txt = js['result']['fullText']
+                    # 解析 HTML
+                    soup = BeautifulSoup(html_txt, 'lxml')
                     for key in KEYWORD:
-                        if key in title and delta_days == 0:
+                        if key in title  and delta_days <= 1:
                             all_url.append(url)
                             all_title.append(title)
                             break
+
+                        if key in soup.text and delta_days <= 1:
+                            all_url.append(url)
+                            all_title.append(title)
+                            break
+
     content = ""
     for u, t in zip(all_url, all_title):
-        content += f"\n标题:{t},\n网址:{u}\n"
+        content += f"标题:{t},\n网址:{u}\n"
     print(content)
     if PUSH_TOKEN and content:
         requests.get(
             "https://www.pushplus.plus/send",
-            params={"token": PUSH_TOKEN, "title": "中国海油供应链平台新公告",
+            params={"token": PUSH_TOKEN_1, "title": "中国海油供应链平台新公告",
                     "content": f"最新通告内容：\n{content}"},
             timeout=5,
         )
+
+        requests.get(
+            "https://www.pushplus.plus/send",
+            params={"token": PUSH_TOKEN_2, "title": "中国海油供应链平台新公告",
+                    "content": f"最新通告内容：\n{content}"},
+            timeout=5,
+        )
+
 
 
 if __name__ == "__main__":
