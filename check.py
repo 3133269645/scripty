@@ -106,7 +106,7 @@ def main():
     for u, t in zip(all_url, all_title):
         content += f"标题:{t},\n网址:{u}\n"
     print(content)
-    if PUSH_TOKEN and content:
+    if PUSH_TOKEN_1 and content:
         requests.get(
             "https://www.pushplus.plus/send",
             params={"token": PUSH_TOKEN_1, "title": "中国海油供应链平台新公告",
