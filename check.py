@@ -45,8 +45,8 @@ HEADERS = {
 }
 
 KEYWORD = ["北斗","人员定位", "工牌", "手持", "车载终端", "接收机", "监测", "短报文", "对讲机", "授时", "无人机", "机器人", "巡检","乙二醇","南海东部"]
-PUSH_TOKEN_1 = os.getenv("PUSHPLUS_TOKEN", "1f714c352f8d4603b7332e00713c8d9d")
-PUSH_TOKEN_2 = os.getenv("PUSHPLUS_TOKEN", "f79e9d696bc745378ecb4ec8236abe83")
+PUSH_TOKEN_1 = "1f714c352f8d4603b7332e00713c8d9d"
+PUSH_TOKEN_2 = "f79e9d696bc745378ecb4ec8236abe83"
 # ------------------------------------
 
 
@@ -137,6 +137,7 @@ def main():
                     params={"token": tok, "title": "中国海油供应链平台新公告",
                             "content": f"最新通告内容：\n{content}"},
                     timeout=10)
+                print("pushplus 推送成功")
             except Exception as e:
                 print(f"pushplus 推送失败: {e}")
 
