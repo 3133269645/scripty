@@ -88,7 +88,7 @@ def main():
                 # 取出 html 字符串
                 html_txt = js['result']['fullText']
                 # 解析 HTML
-                soup = BeautifulSoup(html_txt, features="html.parser")
+                soup = BeautifulSoup(html_txt, 'lxml')
                 for key in KEYWORD:
                     if key in title  and delta_days <= 1:
                         all_url.append(url)
