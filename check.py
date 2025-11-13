@@ -76,7 +76,7 @@ def robust_get(url: str, timeout: int = 15):
 
 
 def main():
-    all_url, all_title = [], []
+    all_url, all_title = [],[]
     for i in range(4):
         print(f"开始第 {i} 页")
         for childrenActive, page in enumerate(PAG[i]):
@@ -116,11 +116,22 @@ def main():
 
                 # 关键字匹配
                 text = title + soup.get_text(" ", strip=True)
-                if any(k in text for k in KEYWORD):
+                
+                matched_keyword = None
+                for k in KEYWORD:
+                    if k in text:
+                        matched_keyword = k
+                        break # 找到第一个匹配的关键词后立即停止循环
+                
+                if matched_keyword:
+                    # 构造最终的目标 URL
                     news_url = (f"https://bid.cnooc.com.cn/home/#/newsAlertDetails?"
                                 f"index=1&childrenActive={childrenActive}&id={uid}&type=null")
+                    
+                    # 修正：使用找到的关键词 k
                     all_url.append(news_url)
-                    all_title.append(title)
+                    all_title.append(f"{title} (命中关键词:{matched_keyword})")
+             
 
     # 推送
     if not all_title:
