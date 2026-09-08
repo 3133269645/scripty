@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
+# workflow 探活修改
 # ---------- 配置 ----------
 API = {
     0: "https://bid.cnooc.com.cn/prodeta/homeportalweb/portal/indexHome/background/businessannouncement/page?"
